@@ -16,7 +16,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package io.webfolder.cdp.sample;
+package com.jrj.huangyan;
 
 import static java.awt.Desktop.getDesktop;
 import static java.awt.Desktop.isDesktopSupported;
@@ -26,6 +26,7 @@ import static java.util.Arrays.asList;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import io.webfolder.cdp.AdaptiveProcessManager;
 import io.webfolder.cdp.Launcher;
@@ -34,37 +35,41 @@ import io.webfolder.cdp.session.SessionFactory;
 
 public class PrintToPDF {
 
-    // Requires Headless Chrome
-    // https://chromium.googlesource.com/chromium/src/+/lkgr/headless/README.md
-    public static void main(String[] args) throws IOException {
-        Launcher launcher = new Launcher();
-        launcher.setProcessManager(new AdaptiveProcessManager());
+	// Requires Headless Chrome
+	// https://chromium.googlesource.com/chromium/src/+/lkgr/headless/README.md
+	public static void main(String[] args) throws IOException {
+		Launcher launcher = new Launcher();
+		launcher.setProcessManager(new AdaptiveProcessManager());
 
-        Path file = createTempFile("cdp4j", ".pdf");
-       // Path file="";
-        try (SessionFactory factory = launcher.launch(asList("--disable-gpu", "--headless"))) {
+		// Path file = createTempFile("cdp4j", ".pdf");
 
-            String context = factory.createBrowserContext();
-            try (Session session = factory.create(context)) {
+		Path file = Paths.get("/data/pdf/1/1.pdf");
+		String url1 = "https://www.runoob.com/jqueryui/jqueryui-work.html";
+		Path file2 = Paths.get("/data/pdf/1/2.pdf");
+		String url2 = "https://www.runoob.com/jqueryui/jqueryui-intro.html";
+		Path[] ps = new Path[] { file, file2 };
+		String[] urls = new String[] { url1, url2 };
+		try (SessionFactory factory = launcher.launch(asList("--disable-gpu", "--headless"))) {
 
-                session.navigate("https://www.runoob.com/jqueryui/jqueryui-work.html");
-                session.waitDocumentReady();
+			String context = factory.createBrowserContext();
+			try (Session session = factory.create(context)) {
+				for (int i = 0; i < ps.length; i++) {
+					session.navigate(urls[i]);
+					session.waitDocumentReady();
 
-                byte[] content = session
-                                    .getCommand()
-                                    .getPage()
-                                    .printToPDF();
+					byte[] content = session.getCommand().getPage().printToPDF();
 
-                write(file, content);
-            }
+					write(ps[i], content);
+				}
+			}
 
-            factory.disposeBrowserContext(context);
-        }
+			factory.disposeBrowserContext(context);
+		}
 
-        if (isDesktopSupported()) {
-            getDesktop().open(file.toFile());
-        }
+//		if (isDesktopSupported()) {
+//			getDesktop().open(file.toFile());
+//		}
 
-        launcher.getProcessManager().kill();
-    }
+		launcher.getProcessManager().kill();
+	}
 }
