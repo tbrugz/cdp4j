@@ -4,7 +4,7 @@
   <groupId>io.webfolder</groupId>
   <artifactId>cdp4j</artifactId>
   <name>cdp4j</name>
-  <version>3.0.14</version>
+  <version>3.0.15</version>
   <description>cdp4j - Chrome DevTools Protocol for Java</description>
   <url>https://webfolder.io</url>
   <inceptionYear>2017, 2019</inceptionYear>
